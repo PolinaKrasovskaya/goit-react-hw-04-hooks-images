@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import Searchbar from "./components/Searchbar/Searchbar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
@@ -21,6 +21,8 @@ const Status = {
 }
 
 export default function App() {
+  const isMounted = useRef(false);
+  const isLoaded = useRef(false);
   const [requestName, setRequesName] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [largeImage, setLargeImage] = useState('');
@@ -35,13 +37,29 @@ export default function App() {
     if(!requestName) {
       return;
     }
-    setStatus(Status.PENDING)
-    setLoading(true)
-
     fetchGallery(page, requestName);
   }, [page, requestName]);
 
+  useEffect(() => {
+    if (isMounted.current) {
+      setStatus(Status.PENDING)
+    }
+    isMounted.current = true;
+  }, [requestName])
+
+  useEffect(() => {
+    // if (page === 1) {
+    //   return;
+    // }
+    
+    if (isLoaded.current) {
+      setLoading(true)
+    }
+    isLoaded.current = true;
+  }, [page])
+
   const fetchGallery = (page, requestName) => {
+
     imageAPI
     .fetchPictures(requestName, page)
     .then(response => {
@@ -57,8 +75,9 @@ export default function App() {
     })
     .catch(error => setError(error, Status.REJECTED))
     .finally(() => setLoading(false))
-
   }
+
+  
 
   const handleFormSubmit = request => {
     setPage(1);
