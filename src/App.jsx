@@ -88,7 +88,7 @@ export default function App() {
         <ImageGallery openModal={toggleModal} imageList={imageList}/>
       )}
       {loading && <ButtonLoader />}
-      {totalResults > 0 
+      {totalResults > 11 
       && imageList.length > 11
       && status !== Status.PENDING
       && !loading
